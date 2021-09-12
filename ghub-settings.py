@@ -12,8 +12,29 @@ DEFAULT_FILENAME_SETTINGS_JSON = 'EDIT_ME.json'
 DEFAULT_PATH_SETTINGS_DB = DEFAULT_FOLDER_LG_GHUB_SETTINGS + DEFAULT_FILENAME_SETTINGS_DB
 
 
-# def getLatestId(file_path):
-#    try:
+def get_latest_id(file_path):
+    try:
+        sqlite_connection = sqlite3.connect(file_path)
+        cursor = sqlite_connection.cursor()
+
+        sql_get_latest_id = 'select MAX(_id) from DATA'
+        cursor.execute(sql_get_latest_id)
+        record = cursor.fetchall()
+        latest_id = record[0][0]
+
+        return latest_id
+    except sqlite3.Error as error:
+        error_message = """
+Failed to read latest id from the table inside settings.db file:
+{file_path}
+This program will quit.
+Error:
+{exception_message}
+        """
+        print(error_message.format(file_path=file_path, exception_message=error))
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
 
 
 def write_to_file(data, file_path):
@@ -36,7 +57,6 @@ def read_blob_data(data_id, file_path):
     try:
         sqlite_connection = sqlite3.connect(file_path)
         cursor = sqlite_connection.cursor()
-        print("Connected to SQLite")
 
         sql_fetch_blob_query = """SELECT _id, FILE from DATA where _id = ?"""
         cursor.execute(sql_fetch_blob_query, (data_id,))
@@ -54,7 +74,6 @@ def read_blob_data(data_id, file_path):
     finally:
         if sqlite_connection:
             sqlite_connection.close()
-            print("sqlite connection is closed")
 
 
 if __name__ == '__main__':
@@ -75,7 +94,10 @@ Press Enter to continue.
     print(program_introduction_notification)
     input()
     print("This program will extract the settings from the database...")
-    file_written = read_blob_data(1, DEFAULT_PATH_SETTINGS_DB)
-    print("The extracted file will be open after you press Enter. Please edit it and don't forget to save the file!")
+    latest_id = get_latest_id(DEFAULT_PATH_SETTINGS_DB)
+    file_written = read_blob_data(latest_id, DEFAULT_PATH_SETTINGS_DB)
+    print("PLEASE CLOSE LG G HUB NOW")
+    print("The extracted file will be open after you press Enter."
+          "Please edit it and don't forget to save the file then close the file (and the program that opened with)")
     input()
     os.system(file_written)
