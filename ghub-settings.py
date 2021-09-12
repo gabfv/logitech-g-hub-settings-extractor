@@ -102,6 +102,44 @@ def read_blob_data(data_id, file_path):
             sqlite_connection.close()
 
 
+def convert_to_binary_data(file_path):
+    try:
+        with open(file_path, 'rb') as file:
+            blob_data = file.read()
+        return blob_data
+    except Exception as error:
+        error_message = """
+ERROR: Failed to read the following file:
+{file_path}
+This program will quit.
+Error:
+{exception_message}
+        """
+        print(error_message.format(file_path=file_path, exception_message=error))
+        exit(24)
+
+
+def insert_blob(data_id, updated_settings_file_path, db_file_path):
+    sqlite_connection = 0
+    try:
+        sqlite_connection = sqlite3.connect(db_file_path)
+        cursor = sqlite_connection.cursor()
+        sqlite_replace_blob_query = """ Replace INTO DATA
+                                  (_id, _date_created, FILE) VALUES (?, ?, ?)"""
+
+        blob = convert_to_binary_data(updated_settings_file_path)
+        # Convert data into tuple format
+        data_tuple = (data_id, datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), blob)
+        cursor.execute(sqlite_replace_blob_query, data_tuple)
+        sqlite_connection.commit()
+        cursor.close()
+    except sqlite3.Error as error:
+        print("Failed to insert blob data into sqlite table", error)
+    finally:
+        if sqlite_connection:
+            sqlite_connection.close()
+
+
 if __name__ == '__main__':
     if not os.path.exists(DEFAULT_PATH_SETTINGS_DB):
         failure_to_find_settings_db = """
@@ -123,8 +161,11 @@ Press Enter to continue.
     latest_id = get_latest_id(DEFAULT_PATH_SETTINGS_DB)
     file_written = read_blob_data(latest_id, DEFAULT_PATH_SETTINGS_DB)
     make_backup(DEFAULT_PATH_SETTINGS_DB)
-    print("PLEASE CLOSE LG G HUB NOW")
+    print("IMPORTANT: PLEASE CLOSE LG G HUB NOW")
     print("The extracted file will be open after you press Enter."
           "Please edit it and don't forget to save the file then close the file (and the program that opened with)")
     input()
     os.system(file_written)
+    insert_blob(latest_id, file_written, DEFAULT_PATH_SETTINGS_DB)
+    print("The settings have been updated.")
+    exit(0)
