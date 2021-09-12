@@ -37,6 +37,7 @@ Error:
         exit(42)
 
 def get_latest_id(file_path):
+    sqlite_connection = 0
     try:
         sqlite_connection = sqlite3.connect(file_path)
         cursor = sqlite_connection.cursor()
@@ -78,6 +79,7 @@ Error:
 
 
 def read_blob_data(data_id, file_path):
+    sqlite_connection = 0
     try:
         sqlite_connection = sqlite3.connect(file_path)
         cursor = sqlite_connection.cursor()
