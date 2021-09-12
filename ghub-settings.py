@@ -3,7 +3,9 @@
 # Part of this program was made with code from:
 # https://pynative.com/python-sqlite-blob-insert-and-retrieve-digital-data/
 
+import datetime
 import os
+import shutil
 import sqlite3
 
 DEFAULT_FOLDER_LG_GHUB_SETTINGS = os.path.expandvars('%LOCALAPPDATA%/LGHUB/')  # Must end with /
@@ -11,6 +13,28 @@ DEFAULT_FILENAME_SETTINGS_DB = 'settings.db'
 DEFAULT_FILENAME_SETTINGS_JSON = 'EDIT_ME.json'
 DEFAULT_PATH_SETTINGS_DB = DEFAULT_FOLDER_LG_GHUB_SETTINGS + DEFAULT_FILENAME_SETTINGS_DB
 
+
+def make_backup(file_path):
+    backup_file_path = file_path + datetime.datetime.now().strftime('.%Y-%m-%d_%H-%M-%S')
+    try:
+        shutil.copy(file_path, backup_file_path)
+        backup_message = """
+A backup of the settings.db file has been made to:
+{backup_file_path}        
+        """
+        print(backup_message.format(backup_file_path=backup_file_path))
+    except Exception as error:
+        error_message = """
+ERROR: Failed to make a backup of the settings.db file! From:
+{source_path}
+To:
+{destination_path}
+Since this is a critical failure, the program will quit.
+Error:
+{exception_message}
+        """
+        print(error_message.format(source_path=file_path, destination_path=backup_file_path, exception_message=error))
+        exit(42)
 
 def get_latest_id(file_path):
     try:
@@ -25,7 +49,7 @@ def get_latest_id(file_path):
         return latest_id
     except sqlite3.Error as error:
         error_message = """
-Failed to read latest id from the table inside settings.db file:
+ERROR: Failed to read latest id from the table inside settings.db file:
 {file_path}
 This program will quit.
 Error:
@@ -45,7 +69,7 @@ def write_to_file(data, file_path):
         print("Stored blob data into: ", file_path, "\n")
     except Exception as error:
         error_message = """
-Failed to write the following file:
+ERROR: Failed to write the following file:
 {file_path}
 Error:
 {exception_message}
@@ -96,6 +120,7 @@ Press Enter to continue.
     print("This program will extract the settings from the database...")
     latest_id = get_latest_id(DEFAULT_PATH_SETTINGS_DB)
     file_written = read_blob_data(latest_id, DEFAULT_PATH_SETTINGS_DB)
+    make_backup(DEFAULT_PATH_SETTINGS_DB)
     print("PLEASE CLOSE LG G HUB NOW")
     print("The extracted file will be open after you press Enter."
           "Please edit it and don't forget to save the file then close the file (and the program that opened with)")
