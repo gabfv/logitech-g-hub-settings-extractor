@@ -5,10 +5,24 @@
 
 import datetime
 import os
+import sys
 import shutil
 import sqlite3
 
-DEFAULT_FOLDER_LG_GHUB_SETTINGS = os.path.expandvars('%LOCALAPPDATA%/LGHUB/')  # Must end with /
+DEFAULT_FOLDER_LG_GHUB_SETTINGS = None
+
+if sys.platform.startswith('win'): # Windows
+    DEFAULT_FOLDER_LG_GHUB_SETTINGS = os.path.expandvars('%LOCALAPPDATA%/LGHUB/') # Must end with /
+elif sys.platform.startswith('darwin'): # MacOS
+    DEFAULT_FOLDER_LG_GHUB_SETTINGS = os.path.expandvars('$HOME/Library/Application Support/lghub/') # Must end with /
+else:
+    error_message = """
+ERROR: Unsupported platform
+{platform}
+    """
+    print(error_message.format(platform=sys.platform))
+    exit(1)
+
 DEFAULT_FILENAME_SETTINGS_DB = 'settings.db'
 DEFAULT_FILENAME_SETTINGS_JSON = 'EDIT_ME.json'
 DEFAULT_PATH_SETTINGS_DB = DEFAULT_FOLDER_LG_GHUB_SETTINGS + DEFAULT_FILENAME_SETTINGS_DB
@@ -162,10 +176,15 @@ Press Enter to continue.
     file_written = read_blob_data(latest_id, DEFAULT_PATH_SETTINGS_DB)
     make_backup(DEFAULT_PATH_SETTINGS_DB)
     print("IMPORTANT: PLEASE CLOSE LG G HUB NOW")
-    print("The extracted file will be open after you press Enter."
-          "Please edit it and don't forget to save the file then close the file (and the program that opened with)")
+    print("The extracted file will be open after you press Enter.")
+    print("Please edit it and don't forget to save the file then close the file (and the program that opened with)")
     input()
-    os.system(file_written)
+    if sys.platform.startswith('win'): # Windows
+        os.system(file_written)
+    elif sys.platform.startswith('darwin'): # MacOS
+        os.system('open "' + file_written + '"')
+    else:
+        print(file_written)
     insert_blob(latest_id, file_written, DEFAULT_PATH_SETTINGS_DB)
     print("The settings have been updated.")
     exit(0)
