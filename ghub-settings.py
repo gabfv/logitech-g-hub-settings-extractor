@@ -170,7 +170,10 @@ This program is intended to extract and replace the settings.json inside the set
 Press Enter to continue.
     """
     print(program_introduction_notification)
-    raw_input()
+    if sys.version_info[0] < 3:
+        raw_input()
+    else:
+        input()
     print("This program will extract the settings from the database...")
     latest_id = get_latest_id(DEFAULT_PATH_SETTINGS_DB)
     file_written = read_blob_data(latest_id, DEFAULT_PATH_SETTINGS_DB)
@@ -178,7 +181,10 @@ Press Enter to continue.
     print("IMPORTANT: PLEASE CLOSE LG G HUB NOW")
     print("The extracted file will be open after you press Enter.")
     print("Please edit it and don't forget to save the file then close the file (and the program that opened with)")
-    raw_input()
+    if sys.version_info[0] < 3:
+        raw_input()
+    else:
+        input()
     if sys.platform.startswith('win'): # Windows
         os.system(file_written)
     elif sys.platform.startswith('darwin'): # MacOS
