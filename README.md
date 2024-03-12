@@ -11,6 +11,10 @@ You need [Python](https://www.python.org/downloads/) installed. I've tested with
 ## How to use
 
 Simply follow the instructions after executing the py file.
+In summary:
+It extracts the JSON. It asks you to close Logitech G Hub then, once it's done, you can press Enter to continue.
+The script open it into your editor (the default app per OS settings for json files, or the OS will let ask you what to open it with). You edit the file as you like. Then, you save the file and close the editor.
+As soon as you close the editor, it automatically insert the modified JSON into Logitech G Hub sqlite db. When you open Logitech G Hub again, it should reflects the changes you've made.
 
 ### Windows
 
