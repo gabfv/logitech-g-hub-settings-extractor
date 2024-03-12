@@ -11,6 +11,7 @@ You need [Python](https://www.python.org/downloads/) installed. I've tested with
 ## How to use
 
 Simply follow the instructions after executing the py file.
+
 In summary:
 It extracts the JSON. It asks you to close Logitech G Hub then, once it's done, you can press Enter to continue.
 The script open it into your editor (the default app per OS settings for json files, or the OS will let ask you what to open it with). You edit the file as you like. Then, you save the file and close the editor.
