@@ -198,6 +198,7 @@ Press Enter to continue.
     ask_to_continue()
 
     print("This program will extract the settings from the database...")
+    print("Settings will be extracted from the following file: " + str(args.db_path))
     latest_id = get_latest_id(args.db_path)
     file_user_edit = read_blob_data(latest_id, args)
     make_backup(args.db_path)
@@ -214,6 +215,7 @@ Press Enter to continue.
         print(file_user_edit)
     # os.system won't necessarily wait for the editor to close.
     print("Press Enter when you have saved the file and closed the editor.")
+    print("The following file will be overwritten: " + str(args.db_path))
     ask_to_continue()
 
     insert_blob(latest_id, file_user_edit, args.db_path)
