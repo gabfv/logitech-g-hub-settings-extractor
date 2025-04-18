@@ -10,7 +10,11 @@ You need [Python](https://www.python.org/downloads/) installed. I've tested with
 
 ## How to use
 
-Simply follow the instructions after executing the py file.
+Simply follow the instructions from the script. They will appear after executing the py file with python:
+```
+python ghub-settings.py
+```
+Note that it will use default paths if there are no parameters (see the next section for more information about parameters).
 
 In summary:
 It extracts the JSON. It asks you to close Logitech G Hub then, once it's done, you can press Enter to continue.
