@@ -208,7 +208,7 @@ Press Enter to continue.
     ask_to_continue()
     
     if sys.platform.startswith('win'): # Windows
-        os.system(file_user_edit)
+        os.system('"' + file_user_edit + '"')
     elif sys.platform.startswith('darwin'): # MacOS
         os.system('open "' + file_user_edit + '"')
     else:
